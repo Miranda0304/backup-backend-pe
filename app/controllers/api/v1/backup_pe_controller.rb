@@ -28,10 +28,11 @@ class Api::V1::BackupPeController < ApplicationController
       puts "\n2. #################### Folder #{index + 1}: #{path} ####################"
       git_fetch
       if git_track_checkout_branch || git_checkout_branch
-        git_pull_source
-        git_push_target
+        if git_pull_source
+          git_push_target
+        end
       end
-      puts '====================================================================================================================='
+      puts "====================================================================================================================="
     end
   rescue StandardError => e
     puts "Error processing folder #{path}: #{e.message}"
@@ -63,6 +64,7 @@ class Api::V1::BackupPeController < ApplicationController
     puts "8. >>>>>>>>>>>>>>>>>>>> #{git_pull_source}"
     result_pull_source = system(git_pull_source)
     puts "9. >>>>>>>>>>>>>>>>>>>> git pull: #{result_pull_source}"
+    result_pull_source
   end
 
   def git_push_target
