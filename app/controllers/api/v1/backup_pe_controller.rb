@@ -1,22 +1,25 @@
 class Api::V1::BackupPeController < ApplicationController
   skip_before_action :verify_authenticity_token
 
+  def initialize
+    @MAIN_FOLDER = "../Portal Empresarial"
+  end
+
   def backup_backend
     system("clear")
     exist_main_folder || return
     list_paths.each_with_index do |path_microservice, index|
       process_microservice_folder(path_microservice, index)
     end
-    render json: { message: "Process end #{params[:branch]}." }
+    render json: { message: "Branch #{params[:branch]} finished." }
   end
 
   def exist_main_folder
-    main_folder = "../Portal Empresarial"
-    if Dir.exist?(main_folder)
-      puts "1. >>>>>>>>>>>>>>>>>>>> Main Folder exist #{main_folder}"
+    if Dir.exist?(@MAIN_FOLDER)
+      puts "1. >>>>>>>>>>>>>>>>>>>> Main Folder exist #{@MAIN_FOLDER}"
       true
     else
-      error_message = "Main Folder #{main_folder} does not exist"
+      error_message = "Main Folder #{@MAIN_FOLDER} does not exist"
       puts ">>>>>>>>>>>>>>>>>>>> ERROR read_folder: #{error_message}"
       render json: { message: error_message }
       false
@@ -76,30 +79,30 @@ class Api::V1::BackupPeController < ApplicationController
 
   def list_paths
     [
-      "../Portal Empresarial/portal-empresarial-aclaraciones-patronales/",
-      "../Portal Empresarial/portal-empresarial-administracion-usuarios",
-      "../Portal Empresarial/portal-empresarial-afiliatorio",
-      "../Portal Empresarial/portal-empresarial-asociacion-disociacion-nrp",
-      "../Portal Empresarial/portal-empresarial-autentica",
-      "../Portal Empresarial/portal-empresarial-baja-registro-legal",
-      "../Portal Empresarial/portal-empresarial-buzon-infonavit",
-      "../Portal Empresarial/portal-empresarial-constancia-fiscal",
-      "../Portal Empresarial/portal-empresarial-consulta-dictaminadores-autorizados",
-      "../Portal Empresarial/portal-empresarial-consulta-notificadores-ejecutores",
-      "../Portal Empresarial/portal-empresarial-consulta-trabajadores",
-      "../Portal Empresarial/portal-empresarial-crea",
-      "../Portal Empresarial/portal-empresarial-devoluciones-sua",
-      "../Portal Empresarial/portal-empresarial-empresas-de-diez",
-      "../Portal Empresarial/portal-empresarial-generador-pdf",
-      "../Portal Empresarial/portal-empresarial-haz-cita",
-      "../Portal Empresarial/portal-empresarial-incidencia",
-      "../Portal Empresarial/portal-empresarial-login-crm",
-      "../Portal Empresarial/portal-empresarial-medios-pago",
-      "../Portal Empresarial/portal-empresarial-mi-perfil",
-      "../Portal Empresarial/portal-empresarial-servicios-intercomunicacion",
-      "../Portal Empresarial/portal-empresarial-sisub",
-      "../Portal Empresarial/portal-empresarial-solicitudes",
-      "../Portal Empresarial/portal-empresarial-tramite-credito",
+      "#{@MAIN_FOLDER}/portal-empresarial-aclaraciones-patronales/",
+      "#{@MAIN_FOLDER}/portal-empresarial-administracion-usuarios",
+      "#{@MAIN_FOLDER}/portal-empresarial-afiliatorio",
+      "#{@MAIN_FOLDER}/portal-empresarial-asociacion-disociacion-nrp",
+      "#{@MAIN_FOLDER}/portal-empresarial-autentica",
+      "#{@MAIN_FOLDER}/portal-empresarial-baja-registro-legal",
+      "#{@MAIN_FOLDER}/portal-empresarial-buzon-infonavit",
+      "#{@MAIN_FOLDER}/portal-empresarial-constancia-fiscal",
+      "#{@MAIN_FOLDER}/portal-empresarial-consulta-dictaminadores-autorizados",
+      "#{@MAIN_FOLDER}/portal-empresarial-consulta-notificadores-ejecutores",
+      "#{@MAIN_FOLDER}/portal-empresarial-consulta-trabajadores",
+      "#{@MAIN_FOLDER}/portal-empresarial-crea",
+      "#{@MAIN_FOLDER}/portal-empresarial-devoluciones-sua",
+      "#{@MAIN_FOLDER}/portal-empresarial-empresas-de-diez",
+      "#{@MAIN_FOLDER}/portal-empresarial-generador-pdf",
+      "#{@MAIN_FOLDER}/portal-empresarial-haz-cita",
+      "#{@MAIN_FOLDER}/portal-empresarial-incidencia",
+      "#{@MAIN_FOLDER}/portal-empresarial-login-crm",
+      "#{@MAIN_FOLDER}/portal-empresarial-medios-pago",
+      "#{@MAIN_FOLDER}/portal-empresarial-mi-perfil",
+      "#{@MAIN_FOLDER}/portal-empresarial-servicios-intercomunicacion",
+      "#{@MAIN_FOLDER}/portal-empresarial-sisub",
+      "#{@MAIN_FOLDER}/portal-empresarial-solicitudes",
+      "#{@MAIN_FOLDER}/portal-empresarial-tramite-credito",
     ]
   end
 
