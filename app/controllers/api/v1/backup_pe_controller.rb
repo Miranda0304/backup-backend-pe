@@ -3,6 +3,10 @@ class Api::V1::BackupPeController < ApplicationController
 
   def initialize
     @MAIN_FOLDER = "../Portal Empresarial"
+    @SUCCESS = 0
+    @PATH = ""
+    @FAILURE_LIST = []
+    @FOLDER = 0
   end
 
   def backup_backend
@@ -11,7 +15,7 @@ class Api::V1::BackupPeController < ApplicationController
     list_paths.each_with_index do |path_microservice, index|
       process_microservice_folder(path_microservice, index)
     end
-    render json: { message: "Branch #{params[:branch]} finished." }
+    render json: { message: "Branch #{params[:branch]} finished.", data: data_info }
   end
 
   def exist_main_folder
@@ -27,12 +31,15 @@ class Api::V1::BackupPeController < ApplicationController
   end
 
   def process_microservice_folder(path, index)
+    @PATH = path
+    @FOLDER = index + 1
     Dir.chdir(path) do
       puts "\n2. #################### Folder #{index + 1}: #{path} ####################"
-      git_fetch
-      if git_track_checkout_branch || git_checkout_branch
-        if git_pull_source
-          git_push_target
+      if git_fetch
+        if git_track_checkout_branch || git_checkout_branch
+          if git_pull_source
+            @SUCCESS += 1 if git_push_target
+          end
         end
       end
       puts "====================================================================================================================="
@@ -43,7 +50,9 @@ class Api::V1::BackupPeController < ApplicationController
 
   def git_fetch
     result_fetch = system("git fetch") unless Dir.exist?(".git 2>&1")
+    admin_list_fails(result_fetch, "git fetch")
     puts "3. >>>>>>>>>>>>>>>>>>>> git fetch: #{result_fetch}"
+    result_fetch
   end
 
   def git_track_checkout_branch
@@ -58,6 +67,7 @@ class Api::V1::BackupPeController < ApplicationController
     git_checkout = "git checkout #{list_repositories[:source][params[:branch].to_sym]}"
     puts "6. >>>>>>>>>>>>>>>>>>>> #{git_checkout}"
     result_checkout = system(git_checkout)
+    admin_list_fails(result_checkout, "git checkout branch")
     puts "7. >>>>>>>>>>>>>>>>>>>> git checkout: #{result_checkout}"
     result_checkout
   end
@@ -66,6 +76,7 @@ class Api::V1::BackupPeController < ApplicationController
     git_pull_source = "git pull #{list_repositories[:source][:name]} #{list_repositories[:source][params[:branch].to_sym]}"
     puts "8. >>>>>>>>>>>>>>>>>>>> #{git_pull_source}"
     result_pull_source = system(git_pull_source)
+    admin_list_fails(result_pull_source, "git pull source")
     puts "9. >>>>>>>>>>>>>>>>>>>> git pull: #{result_pull_source}"
     result_pull_source
   end
@@ -74,7 +85,24 @@ class Api::V1::BackupPeController < ApplicationController
     git_push_target = "git push #{list_repositories[:target][:name]} #{list_repositories[:source][params[:branch].to_sym]}:#{list_repositories[:target][params[:branch].to_sym]} --no-verify"
     puts "10. >>>>>>>>>>>>>>>>>>>> #{git_push_target}"
     result_push_target = system(git_push_target)
+    admin_list_fails(result_push_target, "git push target")
     puts "11. >>>>>>>>>>>>>>>>>>>> git push: #{result_push_target}"
+    git_push_target
+  end
+
+  def admin_list_fails(flag, process)
+    if !flag
+      @FAILURE_LIST << { project: @PATH, process: process, folder: @FOLDER }
+    end
+  end
+
+  def data_info
+    {
+      total_projects: list_paths.length,
+      success_projects: @SUCCESS,
+      fail_projects: (list_paths.length - @SUCCESS),
+      list_fails: @FAILURE_LIST,
+    }
   end
 
   def list_paths
