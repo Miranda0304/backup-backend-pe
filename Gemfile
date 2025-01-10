@@ -56,7 +56,7 @@ group :development do
   gem 'web-console'
   gem 'solargraph', '~> 0.50.0'
   gem 'rufo', '~> 0.18.0'
-  gem 'rubocop', '~> 1.68'
+  gem 'rubocop', '~> 1.70'
 end
 
 group :test do
