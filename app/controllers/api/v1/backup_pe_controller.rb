@@ -15,6 +15,7 @@ class Api::V1::BackupPeController < ApplicationController
     list_paths.each_with_index do |path_microservice, index|
       process_microservice_folder(path_microservice, index)
     end
+    puts "\n\n#{"=>" * 25} FINISHED #{"=>" * 25}\n\n\n"
     render json: { message: "Branch #{params[:branch]} finished.", data: data_info }
   end
 
@@ -34,7 +35,7 @@ class Api::V1::BackupPeController < ApplicationController
     @PATH = path
     @FOLDER = index + 1
     Dir.chdir(path) do
-      puts "\n2. #################### Folder #{index + 1}: #{path} ####################"
+      puts "\n2. #################### Folder #{index + 1}: #{path.gsub(@MAIN_FOLDER, "")} ####################"
       if git_fetch
         if git_track_checkout_branch || git_checkout_branch
           if git_pull_source
@@ -42,7 +43,7 @@ class Api::V1::BackupPeController < ApplicationController
           end
         end
       end
-      puts "====================================================================================================================="
+      puts "=" * 115
     end
   rescue StandardError => e
     puts "Error processing folder #{path}: #{e.message}"
