@@ -57,6 +57,7 @@ class Api::V1::BackupPeController < ApplicationController
   end
 
   def git_track_checkout_branch
+    exceptions_branch
     git_checkout = "git checkout  --track origin/#{list_repositories[:source][params[:branch].to_sym]}"
     puts "4. >>>>>>>>>>>>>>>>>>>> #{git_checkout}"
     result_checkout = system(git_checkout)
@@ -65,6 +66,7 @@ class Api::V1::BackupPeController < ApplicationController
   end
 
   def git_checkout_branch
+    exceptions_branch
     git_checkout = "git checkout #{list_repositories[:source][params[:branch].to_sym]}"
     puts "6. >>>>>>>>>>>>>>>>>>>> #{git_checkout}"
     result_checkout = system(git_checkout)
@@ -74,6 +76,7 @@ class Api::V1::BackupPeController < ApplicationController
   end
 
   def git_pull_source
+    exceptions_branch
     git_pull_source = "git pull #{list_repositories[:source][:name]} #{list_repositories[:source][params[:branch].to_sym]}"
     puts "8. >>>>>>>>>>>>>>>>>>>> #{git_pull_source}"
     result_pull_source = system(git_pull_source)
@@ -83,12 +86,17 @@ class Api::V1::BackupPeController < ApplicationController
   end
 
   def git_push_target
+    exceptions_branch
     git_push_target = "git push #{list_repositories[:target][:name]} #{list_repositories[:source][params[:branch].to_sym]}:#{list_repositories[:target][params[:branch].to_sym]} --no-verify"
     puts "10. >>>>>>>>>>>>>>>>>>>> #{git_push_target}"
     result_push_target = system(git_push_target)
     admin_list_fails(result_push_target, "git push target")
     puts "11. >>>>>>>>>>>>>>>>>>>> git push: #{result_push_target}"
-    git_push_target
+    result_push_target
+  end
+
+  def exceptions_branch
+    params[:branch] = "master2" if @PATH === "#{@MAIN_FOLDER}/portal-empresarial-envs" && params[:branch] === "master"
   end
 
   def admin_list_fails(flag, process)
@@ -132,6 +140,7 @@ class Api::V1::BackupPeController < ApplicationController
       "#{@MAIN_FOLDER}/portal-empresarial-sisub",
       "#{@MAIN_FOLDER}/portal-empresarial-solicitudes",
       "#{@MAIN_FOLDER}/portal-empresarial-tramite-credito",
+      "#{@MAIN_FOLDER}/portal-empresarial-envs",
     ]
   end
 
@@ -142,12 +151,14 @@ class Api::V1::BackupPeController < ApplicationController
         develop: "desarrollo",
         qa: "qa",
         master: "release",
+        master2: "master",
       },
       target: {
         name: "nextia",
         develop: "develop",
         qa: "staging",
         master: "master",
+        master2: "master",
       },
     }
   end
