@@ -296,7 +296,7 @@ GEM
       rubocop-rails
     ruby-progressbar (1.13.0)
     rubyzip (2.4.1)
-    rufo (0.18.0)
+    rufo (0.18.1)
     securerandom (0.4.1)
     selenium-webdriver (4.28.0)
       base64 (~> 0.2)
@@ -412,7 +412,7 @@ DEPENDENCIES
   rails (~> 8.0.0, >= 8.0.0.1)
   rubocop (~> 1.68, >= 1.68)
   rubocop-rails-omakase
-  rufo (~> 0.18.0, >= 0.18.0)
+  rufo (~> 0.18.1)
   selenium-webdriver
   solargraph (~> 0.51.0, >= 0.51)
   solid_cable
