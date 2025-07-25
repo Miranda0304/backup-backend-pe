@@ -15,7 +15,7 @@ class Api::V1::BackupPeController < ApplicationController
     list_paths.each_with_index do |path_microservice, index|
       process_microservice_folder(path_microservice, index)
     end
-    puts "\n\n#{"=>" * 25} FINISHED #{"=>" * 25}\n\n\n"
+    puts "\n\n#{"=>" * 25} FINISHED #{params[:branch]} #{"=>" * 25}\n\n\n"
     render json: { message: "Branch #{params[:branch]} finished.", data: data_info }
   end
 
